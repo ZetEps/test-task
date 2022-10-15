@@ -1,4 +1,5 @@
 import { nanoid } from "nanoid"
+import { Figure } from "./Figure"
 
 export interface Coord{
     x:number | null,
@@ -6,18 +7,15 @@ export interface Coord{
 }
 
 
-export class Line{
+export class Line extends Figure{
 
     private from:Coord
     private to:Coord
-    public id:string
-    private isDraw:boolean
 
     constructor(){
+        super()
         this.from = {x:null, y:null}
         this.to = {x:null, y:null}
-        this.id = nanoid()
-        this.isDraw = false
     }
 
     public render = (ctx:CanvasRenderingContext2D)=>{
@@ -42,7 +40,6 @@ export class Line{
 
     public intersection = (from:Coord, to:Coord)=>{
         
-
         if(this.from?.x && this.to?.x && this.from?.y && this.to?.y && from.x && from.y && to.x && to.y){
 
             const c2x = from.x - to.x
@@ -53,7 +50,7 @@ export class Line{
 
             const d = c3x * c2y - c3y * c2x;
 
-            if(d === 0 ) throw new Error("Number of intersection points is zero or infinity.")
+            // if(d === 0 ) console.log("Error")
 
             const u1 = this.from.x * this.to.y - this.from.y * this.to.x
             const u4 = from.x * to.y - from.y * to.x 
@@ -76,6 +73,7 @@ export class Line{
     public collapse = ()=>{
         if(this.from.x && this.from.y && this.to.x && this.to.y){
             const center = {x:(this.from.x + this.to.x)/2, y:(this.from.y + this.to.y)/2}
+
             setInterval(()=>{
                 if(this.from.x && this.from.y && this.to.x && this.to.y){
                     this.from.x = (this.from.x + center.x) / 2
@@ -83,11 +81,9 @@ export class Line{
 
                     this.to.x = (this.to.x + center.x) / 2
                     this.to.y = (this.to.y + center.y) / 2
-
-
-                    
                 }
-            }, 150)
+            }, 100)
+
         }
         
     }

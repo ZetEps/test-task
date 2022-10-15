@@ -1,10 +1,12 @@
+import { Figure } from "./Figure";
 import { Coord } from "./Line"
 
-export class Dot{
+export class Dot extends Figure{
 
     private dot:Coord
     
     constructor(coords:Coord){
+        super()
         this.dot = coords
     }
 

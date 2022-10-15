@@ -1,6 +1,7 @@
 import React, {useEffect, useRef} from 'react'
 import { Canv } from '../core/Canvas'
 import style from "./Canvas.module.css"
+
 const Canvas = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const btn = useRef<HTMLButtonElement>(null)
@@ -14,7 +15,7 @@ const Canvas = () => {
             canvas.render(30)
         },300)
 
-
+        return ()=>clearInterval(interval)
     },[])
 
 

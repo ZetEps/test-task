@@ -1,15 +1,19 @@
+import { Core } from "./Core";
 import { Dot } from "./Dots";
 import { Line } from "./Line";
 
-export class Canv{
+export class Canv extends Core{
+
     private canvas:HTMLCanvasElement ;
     private ctx:CanvasRenderingContext2D
+
     private lines:Line[]
     private dots:Dot[]
     
-    constructor(root:React.RefObject<HTMLCanvasElement>){
-        if(root.current){
-            this.canvas = root.current
+    constructor(canvas:React.RefObject<HTMLCanvasElement>){
+        super()
+        if(canvas.current){
+            this.canvas = canvas.current
         }
         else{
             throw new Error("Root.current shouldn't be null or undifiend")
@@ -26,15 +30,13 @@ export class Canv{
         
         this.lines = []
         this.dots = []
+
         this.canvas.onmousedown = this.onMouseDown
 
     }
 
 
     private draw = ()=>{
-        
-        
-
         this.ctx.beginPath()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.lineWidth = 1
@@ -47,13 +49,11 @@ export class Canv{
             dot.render(this.ctx)
         })
         
-        if(this.lines.length > 1){
+        if(this.lines.length > 1 && this.status === "active"){
             this.findIntersection()
         }
 
         
-        
-
         this.ctx.stroke()
     }
 
@@ -67,45 +67,46 @@ export class Canv{
     }
 
 
-    private getCursorPosition = (event:MouseEvent)=>{
-        const rect = this.canvas.getBoundingClientRect()
-        const x = event.clientX - rect.left
-        const y = event.clientY 
-        return {x:x, y:y}
-    }
+    
 
     private onMouseDown = (e:MouseEvent)=>{
+
         this.canvas.onmousedown = null
        if(e.button === 0){
-            const coordX = this.getCursorPosition(e)
-            const line = new Line()
-
+            const coordX = this.getCursorPosition(e, this.canvas)
+            const line = new Line().setFromPoint(coordX)
             this.lines.push(line)
-            line.setFromPoint(coordX)
             
             
             this.canvas.onmousemove = (e:MouseEvent)=>{
-                const coordsY = this.getCursorPosition(e)
+
+                const coordsY = this.getCursorPosition(e, this.canvas)
                 line.setToPoint(coordsY)
 
 
                 this.canvas.onclick = (e)=>{
-                const coordsY = this.getCursorPosition(e)
-                line.setToPoint(coordsY)
-                this.canvas.onmousemove = null
-                this.canvas.onclick = null
-                this.canvas.onmousedown = this.onMouseDown
-            }
+
+                    const coordsY = this.getCursorPosition(e, this.canvas)
+                    line.setToPoint(coordsY)
+                    this.canvas.onmousemove = null
+                    this.canvas.onclick = null
+                    this.canvas.onmousedown = this.onMouseDown
+
+                }
                 
             }
 
             
             this.canvas.oncontextmenu = (e)=>{
+
                 e.preventDefault()
                 this.lines = this.lines.filter((element)=>{
+
                     if(element.id === line.id) return false
                     else return true
-                })                
+
+                }) 
+
             }
        }
 
@@ -119,6 +120,7 @@ export class Canv{
             for(let j = i + 1; j < this.lines.length; j++ ){
                 
                 const result = this.lines[i].intersection(this.lines[j].getCoord().from, this.lines[j].getCoord().to)
+
                 if(result){
                     this.dots.push(new Dot(result))
                 }
@@ -131,15 +133,15 @@ export class Canv{
 
 
     public onCanvasClear = ()=>{
-        
-
+        this.status = "collapsing"
+        this.dots = []
         this.lines.forEach((line)=>{
             line.collapse()
         })
+
         setTimeout(() => {
             this.lines = []
-            this.dots = []
-            console.log(this.lines)
+            this.status = "active"
         }, 1000);
     }
     
