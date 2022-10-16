@@ -15,8 +15,10 @@ export class Canv extends Core{
         super()
         if(canvas.current){
             this.canvas = canvas.current
+            console.log(window.innerWidth, window.innerHeight);
+            
             this.canvas.width = window.innerWidth > 900 ? 900 : window.innerWidth - 100 
-            this.canvas.height = window.innerHeight > 600 ? 600 : window.innerWidth * 1.5
+            this.canvas.height = 600
         }
         else{
             throw new Error("Root.current shouldn't be null or undifiend")
@@ -34,7 +36,7 @@ export class Canv extends Core{
         this.lines = []
         this.dots = []
 
-        this.canvas.onmousedown = this.onMouseDown
+        this.canvas.onclick = this.onMouseDown
 
     }
 
@@ -61,7 +63,6 @@ export class Canv extends Core{
     
 
     private onMouseDown = (e:MouseEvent)=>{
-        console.log(1);
         
        if(e.button === 0 && this.status === "active"){
             this.canvas.onmousedown = null
@@ -77,14 +78,13 @@ export class Canv extends Core{
 
 
                 this.canvas.onclick = (e)=>{
-                    console.log(2);
                     const coordsY = this.getCursorPosition(e, this.canvas)
                     line.setToPoint(coordsY)
                     this.canvas.onclick = null
                     this.canvas.onmousemove = null
                     this.canvas.oncontextmenu = null
                     
-                    this.canvas.addEventListener("mousedown", this.onMouseDown)
+                    this.canvas.addEventListener("click", this.onMouseDown)
                     
 
                 }
