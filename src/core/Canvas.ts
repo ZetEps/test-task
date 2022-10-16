@@ -1,3 +1,4 @@
+import { isIntersect } from "../utils";
 import { Core } from "./Core";
 import { Dot } from "./Dots";
 import { Line } from "./Line";
@@ -14,6 +15,8 @@ export class Canv extends Core{
         super()
         if(canvas.current){
             this.canvas = canvas.current
+            this.canvas.width = window.innerWidth > 900 ? 900 : window.innerWidth - 100 
+            this.canvas.height = 600
         }
         else{
             throw new Error("Root.current shouldn't be null or undifiend")
@@ -36,7 +39,10 @@ export class Canv extends Core{
     }
 
 
-    private draw = ()=>{
+    
+
+
+    public render = ()=>{
         this.ctx.beginPath()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.lineWidth = 1
@@ -49,30 +55,19 @@ export class Canv extends Core{
             dot.render(this.ctx)
         })
         
-        if(this.lines.length > 1 && this.status === "active"){
-            this.findIntersection()
-        }
-
+        this.findIntersection()
         
         this.ctx.stroke()
-    }
-
-
-    public render = (ms:number)=>{
-        const interval = setInterval(()=>{
-            this.draw()
-        },ms)
-
-        return interval
     }
 
 
     
 
     private onMouseDown = (e:MouseEvent)=>{
-
-        this.canvas.onmousedown = null
-       if(e.button === 0){
+        console.log(1);
+        
+       if(e.button === 0 && this.status === "active"){
+            this.canvas.onmousedown = null
             const coordX = this.getCursorPosition(e, this.canvas)
             const line = new Line().setFromPoint(coordX)
             this.lines.push(line)
@@ -85,12 +80,15 @@ export class Canv extends Core{
 
 
                 this.canvas.onclick = (e)=>{
-
+                    console.log(2);
                     const coordsY = this.getCursorPosition(e, this.canvas)
                     line.setToPoint(coordsY)
-                    this.canvas.onmousemove = null
                     this.canvas.onclick = null
-                    this.canvas.onmousedown = this.onMouseDown
+                    this.canvas.onmousemove = null
+                    this.canvas.oncontextmenu = null
+                    
+                    this.canvas.addEventListener("mousedown", this.onMouseDown)
+                    
 
                 }
                 
@@ -106,6 +104,10 @@ export class Canv extends Core{
                     else return true
 
                 }) 
+                this.canvas.onclick = null
+                    this.canvas.onmousemove = null
+                    this.canvas.oncontextmenu = null
+                    this.canvas.addEventListener("mousedown", this.onMouseDown)
 
             }
        }
@@ -114,35 +116,43 @@ export class Canv extends Core{
     }
 
     private findIntersection = ()=>{
-        this.dots = []
-        
-        for(let i = 0; i <= this.lines.length; i++){
-            for(let j = i + 1; j < this.lines.length; j++ ){
-                
-                const result = this.lines[i].intersection(this.lines[j].getCoord().from, this.lines[j].getCoord().to)
 
-                if(result){
-                    this.dots.push(new Dot(result))
+        this.dots = []
+
+        if(this.lines.length > 1 && this.status === "active"){
+            for(let i = 0; i <= this.lines.length; i++){
+                for(let j = i + 1; j < this.lines.length; j++ ){
+                    
+                    const result = this.lines[i].intersection(this.lines[j].getCoord().from, this.lines[j].getCoord().to)
+                    const cond = isIntersect(this.lines[i].getCoord().from, this.lines[i].getCoord().to, this.lines[j].getCoord().from, this.lines[j].getCoord().to)
+                   
+                    
+                    if(result && cond){
+                        this.dots.push(new Dot(result))
+                    }
+                    
                 }
-                
             }
         }
+        
     }
 
    
 
 
     public onCanvasClear = ()=>{
-        this.status = "collapsing"
-        this.dots = []
-        this.lines.forEach((line)=>{
+        if(this.status === "active"){
+            this.status = "collapsing"
+            this.dots = []
+            this.lines.forEach((line)=>{
             line.collapse()
         })
 
         setTimeout(() => {
             this.lines = []
             this.status = "active"
-        }, 1000);
+        }, 3000);
+        }
     }
     
 

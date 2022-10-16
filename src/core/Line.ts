@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid"
 import { Figure } from "./Figure"
 
 export interface Coord{
@@ -20,10 +19,12 @@ export class Line extends Figure{
 
     public render = (ctx:CanvasRenderingContext2D)=>{
         if(this.from.x && this.from.y && this.to.x && this.to.y){
+
+            ctx.fillStyle = "#000"
             ctx.moveTo(this.from.x, this.from.y);
             ctx.lineTo(this.to.x, this.to.y);
-            ctx.fillStyle = "#000"
             ctx.fill()
+            
         }
         
     }
@@ -72,15 +73,23 @@ export class Line extends Figure{
 
     public collapse = ()=>{
         if(this.from.x && this.from.y && this.to.x && this.to.y){
-            const center = {x:(this.from.x + this.to.x)/2, y:(this.from.y + this.to.y)/2}
+            let center = {x:(this.from.x + this.to.x)/2, y:(this.from.y + this.to.y)/2}
+
+            const fx = (center.x - this.from.x)/30
+            const fy = (center.y - this.from.y)/30
+
+            const tx = (center.x - this.to.x)/30
+            const ty = (center.y - this.to.y)/30
 
             setInterval(()=>{
                 if(this.from.x && this.from.y && this.to.x && this.to.y){
-                    this.from.x = (this.from.x + center.x) / 2
-                    this.from.y = (this.from.y + center.y) / 2
+                    
+                    this.from.x = this.from.x + fx
+                    this.from.y = this.from.y + fy
 
-                    this.to.x = (this.to.x + center.x) / 2
-                    this.to.y = (this.to.y + center.y) / 2
+                    this.to.x = this.to.x + tx
+                    this.to.y = this.to.y + ty
+
                 }
             }, 100)
 

@@ -1,3 +1,31 @@
 .canvas{
-    border:3px solid #000
+
+    
+    margin-top: 50px;
+    border:2px solid rgb(176, 111, 234);
+}
+
+.container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn{
+    margin-top: 40px;
+    border:none;
+    outline: none;
+    cursor: pointer;
+    width: 200px;
+    height: 60px;
+    border-radius: 10px;
+    background-color:rgb(176, 111, 234);
+    color:#fff;
+    transition: all .2s linear;
+}
+
+.btn:hover{
+    color:rgb(176, 111, 234);
+    background-color: #fff;
+    border:2px solid rgb(176, 111, 234);
 }

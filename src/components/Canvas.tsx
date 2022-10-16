@@ -5,25 +5,41 @@ import style from "./Canvas.module.css"
 const Canvas = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const btn = useRef<HTMLButtonElement>(null)
+
     useEffect(()=>{
         
         const canvas = new Canv(canvasRef)
+
         btn.current?.addEventListener("click", ()=>{
           canvas.onCanvasClear()
         })
-       const interval = setInterval(()=>{
-            canvas.render(30)
-        },300)
 
-        return ()=>clearInterval(interval)
+        let animation:number
+
+       const render = ()=>{
+          canvas.render()
+          animation = window.requestAnimationFrame(render)
+       }
+       
+       render()
+
+
+       return ()=>{window.cancelAnimationFrame(animation)}
     },[])
 
 
+    
 
   return (
     <>
-      <canvas width={900} height={500} className = {'canvas'} ref = {canvasRef}></canvas>
-      <button ref = {btn}>Collapse Lines</button>
+      {canvasRef 
+      ?
+      <div className={style.container}>
+        <canvas  className = {style.canvas} ref = {canvasRef}></canvas>
+        <button ref = {btn} className = {style.btn}>Collapse Lines</button>
+      </div> 
+      : <div></div>
+    }
     </>
   )
 }

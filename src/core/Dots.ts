@@ -13,9 +13,9 @@ export class Dot extends Figure{
 
     public render = (ctx:CanvasRenderingContext2D)=>{
         if(this.dot.x && this.dot.y){
-            
-            ctx.fillRect(this.dot.x,this.dot.y,3,3);
             ctx.fillStyle = "red"
+            ctx.fillRect(this.dot.x,this.dot.y,5,5);
+            
             ctx.fill()
         }
     }
