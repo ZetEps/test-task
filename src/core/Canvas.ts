@@ -1,6 +1,6 @@
 import { isIntersect } from "../utils";
 import { Core } from "./Core";
-import { Dot } from "./Dots";
+import { Point } from "./Point";
 import { Line } from "./Line";
 
 export class Canv extends Core{
@@ -9,14 +9,14 @@ export class Canv extends Core{
     private ctx:CanvasRenderingContext2D
 
     private lines:Line[]
-    private dots:Dot[]
+    private dots:Point[]
     
     constructor(canvas:React.RefObject<HTMLCanvasElement>){
         super()
         if(canvas.current){
             this.canvas = canvas.current
             this.canvas.width = window.innerWidth > 900 ? 900 : window.innerWidth - 100 
-            this.canvas.height = 600
+            this.canvas.height = window.innerHeight > 600 ? 600 : window.innerWidth * 1.5
         }
         else{
             throw new Error("Root.current shouldn't be null or undifiend")
@@ -43,7 +43,6 @@ export class Canv extends Core{
 
 
     public render = ()=>{
-        this.ctx.beginPath()
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.lineWidth = 1
 
@@ -56,8 +55,6 @@ export class Canv extends Core{
         })
         
         this.findIntersection()
-        
-        this.ctx.stroke()
     }
 
 
@@ -128,7 +125,7 @@ export class Canv extends Core{
                    
                     
                     if(result && cond){
-                        this.dots.push(new Dot(result))
+                        this.dots.push(new Point(result))
                     }
                     
                 }
