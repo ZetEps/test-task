@@ -42,74 +42,6 @@ export class Canv extends Core{
     
 
 
-    public render = ()=>{
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.ctx.lineWidth = 1
-
-        this.lines.forEach((line)=>{
-            line.render(this.ctx)
-        })
-
-        this.dots.forEach((dot)=>{
-            dot.render(this.ctx)
-        })
-        
-        this.findIntersection()
-    }
-
-
-    
-
-    private onMouseDown = (e:MouseEvent)=>{
-        
-       if(e.button === 0 && this.status === "active"){
-            this.canvas.onmousedown = null
-            const coordX = this.getCursorPosition(e, this.canvas)
-            const line = new Line().setFromPoint(coordX)
-            this.lines.push(line)
-            
-            
-            this.canvas.onmousemove = (e:MouseEvent)=>{
-
-                const coordsY = this.getCursorPosition(e, this.canvas)
-                line.setToPoint(coordsY)
-
-
-                this.canvas.onclick = (e)=>{
-                    const coordsY = this.getCursorPosition(e, this.canvas)
-                    line.setToPoint(coordsY)
-                    this.canvas.onclick = null
-                    this.canvas.onmousemove = null
-                    this.canvas.oncontextmenu = null
-                    
-                    this.canvas.addEventListener("click", this.onMouseDown)
-                    
-
-                }
-                
-            }
-
-            
-            this.canvas.oncontextmenu = (e)=>{
-
-                e.preventDefault()
-                this.lines = this.lines.filter((element)=>{
-
-                    if(element.id === line.id) return false
-                    else return true
-
-                }) 
-                this.canvas.onclick = null
-                    this.canvas.onmousemove = null
-                    this.canvas.oncontextmenu = null
-                    this.canvas.addEventListener("mousedown", this.onMouseDown)
-
-            }
-       }
-
-       
-    }
-
     private findIntersection = ()=>{
 
         this.dots = []
@@ -132,22 +64,102 @@ export class Canv extends Core{
         
     }
 
+
+    
+
+    private onMouseDown = (e:MouseEvent)=>{
+        
+       if(e.button === 0){
+            this.canvas.onmousedown = null
+            const coordX = this.getCursorPosition(e, this.canvas)
+            const line = new Line().setFromPoint({x:coordX.x, y:coordX.y})
+            this.lines.push(line)
+            
+            
+            this.canvas.onmousemove = (e:MouseEvent)=>{
+
+                const coordY = this.getCursorPosition(e, this.canvas)
+                line.setToPoint({x:coordY.x, y:coordY.y})
+
+
+                this.canvas.onclick = (e)=>{
+                    const coordY = this.getCursorPosition(e, this.canvas)
+                    line.setToPoint({x:coordY.x, y:coordY.y})
+                    if(this.status === "collapsing"){
+                        setInterval(()=>{
+                            line.state = "active"
+                        }, 3000)
+                    }else{
+                        line.state = "active"
+                    }
+                    this.canvas.onclick = null
+                    this.canvas.onmousemove = null
+                    this.canvas.oncontextmenu = null
+                    
+                    this.canvas.addEventListener("click", this.onMouseDown)
+                    
+
+                }
+                
+            }
+
+            
+
+            
+            this.canvas.oncontextmenu = (e)=>{
+
+                e.preventDefault()
+                this.lines = this.lines.filter((element)=>{
+
+                    if(element.id === line.id) return false
+                    else return true
+
+                }) 
+                this.canvas.onclick = null
+                    this.canvas.onmousemove = null
+                    this.canvas.oncontextmenu = null
+                    this.canvas.addEventListener("mousedown", this.onMouseDown)
+
+            }
+       }
+
+       
+    }
+    
+
+    public render = ()=>{
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.ctx.lineWidth = 1
+
+        this.lines.forEach((line)=>{
+            line.render(this.ctx)
+        })
+
+        this.dots.forEach((dot)=>{
+            dot.render(this.ctx)
+        })
+        
+        this.findIntersection()
+    }
+
+    
+
    
 
 
     public onCanvasClear = ()=>{
-        if(this.status === "active"){
-            this.status = "collapsing"
-            this.dots = []
-            this.lines.forEach((line)=>{
-            line.collapse()
+        this.lines.forEach((line)=>{
+            if(line.state === "active"){
+                line.collapse()
+            }
         })
 
-        setTimeout(() => {
-            this.lines = []
-            this.status = "active"
-        }, 3000);
-        }
+        setTimeout(()=>{
+          this.lines = this.lines.filter((line)=>{
+                if(line.state === "colapsed") return false
+                else return true
+            })
+        }, 3000)
     }
     
 

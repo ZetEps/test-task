@@ -3,6 +3,7 @@ import { nanoid } from "nanoid"
 export  abstract class Figure{
     public id:string
     
+    
     constructor(){
         this.id = nanoid()
     }

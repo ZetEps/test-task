@@ -10,11 +10,13 @@ export class Line extends Figure{
 
     private from:Coord
     private to:Coord
+    public state:"active" | "draw" | "colapsed" | "colapsing"
 
     constructor(){
         super()
         this.from = {x:null, y:null}
         this.to = {x:null, y:null}
+        this.state = "draw"
     }
 
     public render = (ctx:CanvasRenderingContext2D)=>{
@@ -50,7 +52,7 @@ export class Line extends Figure{
 
             const d = c3x * c2y - c3y * c2x;
 
-            // if(d === 0 ) console.log("Error")
+            if(d === 0 ) console.log("Error")
 
             const u1 = this.from.x * this.to.y - this.from.y * this.to.x
             const u4 = from.x * to.y - from.y * to.x 
@@ -71,6 +73,8 @@ export class Line extends Figure{
 
 
     public collapse = ()=>{
+        this.state = "colapsing"
+
         if(this.from.x && this.from.y && this.to.x && this.to.y){
             let center = {x:(this.from.x + this.to.x)/2, y:(this.from.y + this.to.y)/2}
 
@@ -91,6 +95,10 @@ export class Line extends Figure{
 
                 }
             }, 40)
+
+            setTimeout(()=>{
+                this.state = "colapsed"
+            }, 3000)
 
         }
         
