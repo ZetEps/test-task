@@ -14,11 +14,9 @@ export class Canv extends Core{
     constructor(canvas:React.RefObject<HTMLCanvasElement>){
         super()
         if(canvas.current){
-            this.canvas = canvas.current
-            console.log(window.innerWidth, window.innerHeight);
-            
-            this.canvas.width = window.innerWidth > 900 ? 900 : window.innerWidth - 100 
-            this.canvas.height = 600
+            this.canvas = canvas.current      
+            this.canvas.width = window.innerWidth > 1000 ? 1000 : window.innerWidth - 100 
+            this.canvas.height =  600
         }
         else{
             throw new Error("Root.current shouldn't be null or undifiend")
