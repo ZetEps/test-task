@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react'
-import { Canv } from '../core/Canvas'
+import { Canv } from '../core/Canv'
 import style from "./Canvas.module.css"
 
 const Canvas = () => {

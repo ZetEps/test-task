@@ -1,17 +1,31 @@
-export abstract class Core{
+import { State } from "./State";
 
-    public status:"active" | "collapsing"
 
-    constructor(){
-        this.status = "active"
+export class Core {
+  public status: "active" | "collapsing";
+  public canvas: HTMLCanvasElement;
+  public ctx: CanvasRenderingContext2D;
+  public state: State;
+
+  constructor(canvas: React.RefObject<HTMLCanvasElement>) {
+    if (canvas.current) {
+      this.canvas = canvas.current;
+      this.canvas.width =
+        window.innerWidth > 1000 ? 1000 : window.innerWidth - 100;
+      this.canvas.height = 600;
+    } else {
+      throw new Error("Canvas.current shouldn't be null or undifiend");
     }
 
-    public getCursorPosition = (event:MouseEvent, canvas:HTMLCanvasElement)=>{
+    const context = this.canvas.getContext("2d");
 
-        const rect = canvas.getBoundingClientRect()
-        const x = event.clientX - rect.left
-        const y = event.clientY  - rect.top
-        return {x:x, y:y}
-        
+    if (context) {
+      this.ctx = context;
+    } else {
+      throw new Error("Context shouldn't be null");
     }
+
+    this.state = new State();
+    this.status = "active";
+  }
 }
